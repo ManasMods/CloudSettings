@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "cloudsettings",
+  "version": "${version}",
+  "name": "CloudSettings",
+  "description": "A simple mod to sync settings between instances",
+  "authors": [
+    "MrProfessor"
+  ],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.github.manasmods.cloudsettings.fabric.CloudSettingsFabric"
+    ]
+  },
+  "mixins": [
+    "cloudsettings.mixins.json",
+    "cloudsettings-common.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.4",
+    "minecraft": ">=1.16.5"
+  }
+}
