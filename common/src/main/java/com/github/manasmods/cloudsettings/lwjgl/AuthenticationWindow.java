@@ -16,21 +16,30 @@ public class AuthenticationWindow {
 
     public void show() {
         String apiToken = ApiHelper.checkAutoLogin();
-        while (apiToken == null) {
-            apiToken = ApiHelper.getUserApiToken(this.uuid, requestPassword());
+        if (apiToken == null) {
+            while (apiToken == null) {
+                apiToken = ApiHelper.getUserApiToken(this.uuid, requestPassword());
+            }
+        } else {
+            LogHelper.getLogger().info("Token login was successful. Skipping login request.");
         }
         try {
-            if (SettingsLoadingHandler.getLoginKeyFile().get().getParentFile().mkdirs()) {
+            if (SettingsLoadingHandler.getLoginKeyFile().getParentFile().mkdirs()) {
                 LogHelper.getLogger().info("Created storage directory.");
             }
-            BufferedWriter writer = new BufferedWriter(new FileWriter(SettingsLoadingHandler.getLoginKeyFile().get()));
+
+            if (SettingsLoadingHandler.getLoginKeyFile().exists()) {
+                //Delete old login file if it exists
+                SettingsLoadingHandler.getLoginKeyFile().delete();
+            }
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter(SettingsLoadingHandler.getLoginKeyFile()));
             writer.write(apiToken);
             writer.close();
+            SettingsLoadingHandler.apiToken.set(apiToken);
         } catch (IOException e) {
-            e.printStackTrace();
+            LogHelper.getLogger().trace("Exception while writing the new API Token into the login.key file.", e);
         }
-
-        SettingsLoadingHandler.apiToken.set(apiToken);
     }
 
     private String requestPassword() {

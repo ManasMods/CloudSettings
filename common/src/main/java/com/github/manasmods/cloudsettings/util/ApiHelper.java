@@ -32,24 +32,37 @@ public class ApiHelper {
     private static final CloseableHttpClient HTTP_CLIENT = HttpClients.createDefault();
 
     public static String checkAutoLogin() {
-        if (!SettingsLoadingHandler.getLoginKeyFile().get().exists()) return null;
-        try (Stream<String> stream = Files.lines(SettingsLoadingHandler.getLoginKeyFile().get().toPath(), StandardCharsets.UTF_8)) {
+        if (!SettingsLoadingHandler.getLoginKeyFile().exists()) {
+            LogHelper.getLogger().info("Couldn't find a login token at: {}", SettingsLoadingHandler.getLoginKeyFile().getAbsolutePath());
+            return null;
+        }
+        LogHelper.getLogger().info("Found existing login token.");
+        try (Stream<String> stream = Files.lines(SettingsLoadingHandler.getLoginKeyFile().toPath(), StandardCharsets.UTF_8)) {
             String storedToken = stream.findFirst().orElse(null);
-            if (storedToken == null) return null;
+            if (storedToken == null) {
+                LogHelper.getLogger().warn("Could not load Token from file!");
+                return null;
+            }
+            LogHelper.getLogger().info("Trying login with the Token...");
             HttpGet request = new HttpGet("http://134.255.220.120:8800/cloudsettings/autologin");
             request.addHeader(HttpHeaders.USER_AGENT, "Googlebot");
             request.addHeader("user-token", storedToken);
 
             CloseableHttpResponse response = HTTP_CLIENT.execute(request);
             HttpEntity entity = response.getEntity();
-            String result = EntityUtils.toString(entity);
+            JsonObject resultObject = new JsonParser().parse(EntityUtils.toString(entity)).getAsJsonObject();
+            String result = getResultValue(resultObject);
+            if (request == null) return null;
+
             if (!result.startsWith("Login failed")) {
+                LogHelper.getLogger().info("Received new token: {}", result);
                 return result;
             } else {
+                LogHelper.getLogger().info("Login with Token failed.");
                 return null;
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LogHelper.getLogger().trace("Exception while trying to log in.", e);
             return null;
         }
     }
@@ -101,13 +114,16 @@ public class ApiHelper {
 
             String resultValue = getResultValue(resultObject);
 
+            if (resultValue == null) return false;
             if (resultValue.startsWith("Login failed")) {
-                SettingsLoadingHandler.getLoginKeyFile().get().delete();
+                if (SettingsLoadingHandler.getLoginKeyFile().delete()) {
+                    LogHelper.getLogger().info("Login Token is outdated. Requesting new a new one...");
+                }
                 AuthenticationWindow window = new AuthenticationWindow(Minecraft.getInstance().getUser().getUuid());
                 window.show();
                 return sendSetting(key, value);
             }
-            return resultValue != null && resultValue.equals("Value saved");
+            return resultValue.equals("Value saved");
         } catch (Exception e) {
             LogHelper.getLogger().trace("Exception while trying to send the update to the cloud.", e);
             return false;
@@ -122,7 +138,9 @@ public class ApiHelper {
             //Exit if no status has been sent
             if (resultValue == null) return Lists.newArrayList();
             if (resultValue.startsWith("Login failed")) {
-                SettingsLoadingHandler.getLoginKeyFile().get().delete();
+                if (SettingsLoadingHandler.getLoginKeyFile().delete()) {
+                    LogHelper.getLogger().info("Login Token is outdated. Requesting new a new one...");
+                }
                 AuthenticationWindow window = new AuthenticationWindow(Minecraft.getInstance().getUser().getUuid());
                 window.show();
                 return loadSettings();

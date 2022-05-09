@@ -22,7 +22,12 @@ import java.util.stream.Stream;
 public class SettingsLoadingHandler {
     private static boolean initialLoadCompleted = false;
     @Getter
-    private static AtomicReference<File> loginKeyFile = null;
+    private static final File loginKeyFile = new File(System.getProperty("user.home"))
+        .toPath()
+        .resolve(".minecraft")
+        .resolve("cloudsettings")
+        .resolve("login.key")
+        .toFile();
     public static AtomicReference<String> apiToken = new AtomicReference<>("");
     private static final ConcurrentHashMap<String, String> settingsMap = new ConcurrentHashMap<>();
     private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
@@ -31,15 +36,9 @@ public class SettingsLoadingHandler {
         if (initialLoadCompleted) return;
         final File optionsFile = ((OptionsAccessor) options).getOptionsFile();
 
+
         LogHelper.getLogger().info("Requesting for authentication...");
 
-        loginKeyFile = new AtomicReference<>(new File(System.getProperty("user.home"))
-            .toPath()
-            .resolve(".minecraft")
-            .resolve("cloudsettings")
-            .resolve("login.key")
-            .toFile());
-        //create required dirs
         AuthenticationWindow window = new AuthenticationWindow(Minecraft.getInstance().getUser().getUuid());
         window.show();
 
@@ -71,7 +70,6 @@ public class SettingsLoadingHandler {
                 LogHelper.getLogger().trace("Exception while updating options.txt file.", e);
             }
         }
-
 
         initialLoadCompleted = true;
     }
