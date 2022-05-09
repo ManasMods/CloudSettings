@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Options.class)
 public class MixinOptions {
-    @Inject(method = "save()V", at = @At("HEAD"))
+    @Inject(method = "save()V", at = @At("RETURN"))
     private void onSave(CallbackInfo ci) {
         SettingsLoadingHandler.checkForUpdate((Options) (Object) this);
     }

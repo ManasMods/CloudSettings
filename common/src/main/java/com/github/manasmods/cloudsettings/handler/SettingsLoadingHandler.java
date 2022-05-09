@@ -14,7 +14,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 
 public class SettingsLoadingHandler {
     private static boolean initialLoadCompleted = false;
@@ -46,7 +48,7 @@ public class SettingsLoadingHandler {
 
         //Load known configs
         ApiHelper.loadSettings()
-            .forEach(settingLine -> settingsMap.put(settingLine.substring(0, settingLine.indexOf(':')), settingLine));
+            .forEach(settingLine -> settingsMap.put(getKeyFromOptionLine(settingLine), settingLine));
 
         if (!optionsFile.exists()) {
             LogHelper.getLogger().info("No options file found. Trying to create a new one...");
@@ -75,6 +77,48 @@ public class SettingsLoadingHandler {
     public static void checkForUpdate(Options options) {
         if (!initialLoadCompleted) return;
         //TODO check for update
-        //TODO update
+        final File optionsFile = ((OptionsAccessor) options).getOptionsFile();
+        LogHelper.getLogger().info("Checking options.txt for updates...");
+        try (Stream<String> lines = Files.lines(optionsFile.toPath())) {
+            AtomicInteger added = new AtomicInteger(0);
+            AtomicInteger updated = new AtomicInteger(0);
+
+
+            lines.forEach(settingsLine -> {
+                String key = getKeyFromOptionLine(settingsLine);
+
+                if (settingsMap.containsKey(key)) {
+                    // check for change
+                    String value = settingsMap.get(key);
+                    if (!value.equals(settingsLine)) {
+                        //update
+                        settingsMap.put(key, settingsLine);
+                        if (ApiHelper.sendSetting(key, settingsLine)) {
+                            LogHelper.getLogger().info("Updated {} in Cloud.", key);
+                        } else {
+                            LogHelper.getLogger().info("Failed to update {} in Cloud.", key);
+                        }
+                        updated.incrementAndGet();
+                    }
+                } else {
+                    //Add new entry
+                    settingsMap.put(getKeyFromOptionLine(settingsLine), settingsLine);
+                    if (ApiHelper.sendSetting(key, settingsLine)) {
+                        LogHelper.getLogger().info("Updated {} in Cloud.", key);
+                    } else {
+                        LogHelper.getLogger().info("Failed to update {} in Cloud.", key);
+                    }
+                    added.incrementAndGet();
+                }
+            });
+
+            LogHelper.getLogger().info("Added {} and updated {} options", added.get(), updated.get());
+        } catch (IOException e) {
+            LogHelper.getLogger().trace("Exception while checking the options.txt file", e);
+        }
+    }
+
+    private static String getKeyFromOptionLine(String line) {
+        return line.substring(0, line.indexOf(':'));
     }
 }
