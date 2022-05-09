@@ -1,8 +1,8 @@
 package com.github.manasmods.cloudsettings.lwjgl;
 
-import com.github.manasmods.cloudsettings.CloudSettings;
 import com.github.manasmods.cloudsettings.handler.SettingsLoadingHandler;
 import com.github.manasmods.cloudsettings.util.ApiHelper;
+import com.github.manasmods.cloudsettings.util.LogHelper;
 import lombok.RequiredArgsConstructor;
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
@@ -21,7 +21,7 @@ public class AuthenticationWindow {
         }
         try {
             if (SettingsLoadingHandler.getLoginKeyFile().get().getParentFile().mkdirs()) {
-                CloudSettings.getLogger().info("Created storage directory.");
+                LogHelper.getLogger().info("Created storage directory.");
             }
             BufferedWriter writer = new BufferedWriter(new FileWriter(SettingsLoadingHandler.getLoginKeyFile().get()));
             writer.write(apiToken);
