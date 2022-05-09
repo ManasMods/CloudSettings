@@ -86,6 +86,7 @@ public class SettingsLoadingHandler {
             lines.forEach(settingsLine -> {
                 String key = getKeyFromOptionLine(settingsLine);
 
+                //TODO skip blacklisted settings
                 if (settingsMap.containsKey(key)) {
                     // check for change
                     String value = settingsMap.get(key);
