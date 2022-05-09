@@ -6,7 +6,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.client.Minecraft;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -18,6 +17,7 @@ import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -87,8 +87,9 @@ public class ApiHelper {
     }
 
     public static boolean sendSetting(String key, String value) {
-        String urlPath = String.format("store/%s/%s/%s", getUserId(), StringEscapeUtils.escapeHtml4(key), StringEscapeUtils.escapeHtml4(value));
-        try (CloseableHttpResponse response = HTTP_CLIENT.execute(authorizedGet(urlPath))) {
+        try {
+            String urlPath = URLEncoder.encode(String.format("store/%s/%s/%s", getUserId(), key, value), "UTF-8");
+            CloseableHttpResponse response = HTTP_CLIENT.execute(authorizedGet(urlPath));
 
             HttpEntity entity = response.getEntity();
             JsonObject resultObject = new JsonParser().parse(EntityUtils.toString(entity)).getAsJsonObject();
