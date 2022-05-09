@@ -20,7 +20,6 @@ import org.lwjgl.util.tinyfd.TinyFileDialogs;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -73,7 +72,7 @@ public class ApiHelper {
         request.addHeader("user-password", password);
         try (CloseableHttpResponse response = HTTP_CLIENT.execute(request)) {
             HttpEntity entity = response.getEntity();
-            JsonObject resultObject = new JsonParser().parse(EntityUtils.toString(entity)).getAsJsonObject();
+            JsonObject resultObject = JsonParser.parseString(EntityUtils.toString(entity)).getAsJsonObject();
             if (!resultObject.has("result")) {
                 LogHelper.getLogger().fatal("Got an empty response from API in getUserApiToken.");
                 return null;
@@ -110,7 +109,7 @@ public class ApiHelper {
             HttpEntity entity = response.getEntity();
             JsonReader reader = new JsonReader(new StringReader(EntityUtils.toString(entity)));
             reader.setLenient(true);
-            JsonObject resultObject = new JsonParser().parse(reader).getAsJsonObject();
+            JsonObject resultObject = JsonParser.parseReader(reader).getAsJsonObject();
 
             String resultValue = getResultValue(resultObject);
 
@@ -133,7 +132,7 @@ public class ApiHelper {
     public static List<String> loadSettings() {
         try (CloseableHttpResponse response = HTTP_CLIENT.execute(authorizedGet(String.format("store/%s", getUserId())))) {
             HttpEntity entity = response.getEntity();
-            JsonObject resultObject = new JsonParser().parse(EntityUtils.toString(entity)).getAsJsonObject();
+            JsonObject resultObject = JsonParser.parseString(EntityUtils.toString(entity)).getAsJsonObject();
             String resultValue = getResultValue(resultObject.get("result").getAsJsonObject());
             //Exit if no status has been sent
             if (resultValue == null) return Lists.newArrayList();
@@ -178,7 +177,7 @@ public class ApiHelper {
         return jsonObject.get("result").getAsString();
     }
 
-    private static String encode(String value) throws UnsupportedEncodingException {
-        return URLEncoder.encode(value, "UTF-8");
+    private static String encode(String value) {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 }
