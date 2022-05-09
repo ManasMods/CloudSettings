@@ -1,8 +1,8 @@
 package com.github.manasmods.cloudsettings.forge;
 
-import lombok.Getter;
-import me.shedaniel.architectury.platform.forge.EventBuses;
 import com.github.manasmods.cloudsettings.CloudSettings;
+import dev.architectury.platform.forge.EventBuses;
+import lombok.Getter;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
