@@ -95,9 +95,6 @@ public class ApiHelper {
             CloseableHttpResponse response = HTTP_CLIENT.execute(authorizedGet(String.format("store/%s/%s/%s", getUserId(), encode(key), encode(value))));
 
             HttpEntity entity = response.getEntity();
-
-            LogHelper.getLogger().info("Got {} as response", EntityUtils.toString(entity));
-
             JsonReader reader = new JsonReader(new StringReader(EntityUtils.toString(entity)));
             reader.setLenient(true);
             JsonObject resultObject = new JsonParser().parse(reader).getAsJsonObject();
