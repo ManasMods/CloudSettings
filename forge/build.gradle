@@ -73,3 +73,5 @@ publishing {
         // Add repositories to publish to here.
     }
 }
+
+loom.forge.mixinConfig "cloudsettings-common.mixins.json"
