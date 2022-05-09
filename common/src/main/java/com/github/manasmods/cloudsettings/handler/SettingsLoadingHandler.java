@@ -12,8 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
@@ -23,7 +22,7 @@ public class SettingsLoadingHandler {
     @Getter
     private static AtomicReference<File> loginKeyFile = null;
     public static AtomicReference<String> apiToken = new AtomicReference<>("");
-    private static final Map<String, String> settingsMap = new TreeMap<>();
+    private static final ConcurrentHashMap<String, String> settingsMap = new ConcurrentHashMap<>();
 
     public static void checkForLoad(Options options) {
         if (initialLoadCompleted) return;
@@ -83,7 +82,6 @@ public class SettingsLoadingHandler {
             AtomicInteger added = new AtomicInteger(0);
             AtomicInteger updated = new AtomicInteger(0);
 
-
             lines.forEach(settingsLine -> {
                 String key = getKeyFromOptionLine(settingsLine);
 
@@ -92,22 +90,12 @@ public class SettingsLoadingHandler {
                     String value = settingsMap.get(key);
                     if (!value.equals(settingsLine)) {
                         //update
-                        settingsMap.put(key, settingsLine);
-                        if (ApiHelper.sendSetting(key, settingsLine)) {
-                            LogHelper.getLogger().info("Updated {} in Cloud.", key);
-                        } else {
-                            LogHelper.getLogger().info("Failed to update {} in Cloud.", key);
-                        }
+                        updateOption(key, settingsLine);
                         updated.incrementAndGet();
                     }
                 } else {
                     //Add new entry
-                    settingsMap.put(getKeyFromOptionLine(settingsLine), settingsLine);
-                    if (ApiHelper.sendSetting(key, settingsLine)) {
-                        LogHelper.getLogger().info("Updated {} in Cloud.", key);
-                    } else {
-                        LogHelper.getLogger().info("Failed to update {} in Cloud.", key);
-                    }
+                    updateOption(key, settingsLine);
                     added.incrementAndGet();
                 }
             });
@@ -120,5 +108,16 @@ public class SettingsLoadingHandler {
 
     private static String getKeyFromOptionLine(String line) {
         return line.substring(0, line.indexOf(':'));
+    }
+
+    private static void updateOption(String key, String value) {
+        new Thread(() -> {
+            settingsMap.put(key, value);
+            if (ApiHelper.sendSetting(key, value)) {
+                LogHelper.getLogger().info("Updated {} in Cloud.", key);
+            } else {
+                LogHelper.getLogger().info("Failed to update {} in Cloud.", key);
+            }
+        }).start();
     }
 }
