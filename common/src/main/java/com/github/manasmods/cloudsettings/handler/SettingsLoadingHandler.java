@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
@@ -23,6 +25,7 @@ public class SettingsLoadingHandler {
     private static AtomicReference<File> loginKeyFile = null;
     public static AtomicReference<String> apiToken = new AtomicReference<>("");
     private static final ConcurrentHashMap<String, String> settingsMap = new ConcurrentHashMap<>();
+    private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
 
     public static void checkForLoad(Options options) {
         if (initialLoadCompleted) return;
@@ -75,7 +78,7 @@ public class SettingsLoadingHandler {
 
     public static void checkForUpdate(Options options) {
         if (!initialLoadCompleted) return;
-        //TODO check for update
+        //check for update
         final File optionsFile = ((OptionsAccessor) options).getOptionsFile();
         LogHelper.getLogger().info("Checking options.txt for updates...");
         try (Stream<String> lines = Files.lines(optionsFile.toPath())) {
@@ -111,13 +114,13 @@ public class SettingsLoadingHandler {
     }
 
     private static void updateOption(String key, String value) {
-        new Thread(() -> {
+        EXECUTOR.submit(() -> {
             settingsMap.put(key, value);
             if (ApiHelper.sendSetting(key, value)) {
                 LogHelper.getLogger().info("Updated {} in Cloud.", key);
             } else {
                 LogHelper.getLogger().info("Failed to update {} in Cloud.", key);
             }
-        }).start();
+        });
     }
 }
