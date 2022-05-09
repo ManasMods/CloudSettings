@@ -157,8 +157,7 @@ public class ApiHelper {
                 JsonObject jsonObject = jsonElement.getAsJsonObject();
                 if (!jsonObject.has("key") || !jsonObject.has("value")) return;
 
-                String settingLine = String.format("%s:%s", jsonObject.get("key").getAsString(), jsonObject.get("value").getAsString());
-                settings.add(settingLine);
+                settings.add(jsonObject.get("value").getAsString());
             });
 
             LogHelper.getLogger().info("Loaded {} settings from Cloud.", settings.size());
