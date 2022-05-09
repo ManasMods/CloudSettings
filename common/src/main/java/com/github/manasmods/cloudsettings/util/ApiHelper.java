@@ -1,12 +1,12 @@
 package com.github.manasmods.cloudsettings.util;
 
-import com.github.manasmods.cloudsettings.CloudSettings;
 import com.github.manasmods.cloudsettings.handler.SettingsLoadingHandler;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.client.Minecraft;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -87,7 +87,9 @@ public class ApiHelper {
     }
 
     public static boolean sendSetting(String key, String value) {
-        try (CloseableHttpResponse response = HTTP_CLIENT.execute(authorizedGet(String.format("store/%s/%s/%s", getUserId(), key, value)))) {
+        String urlPath = String.format("store/%s/%s/%s", getUserId(), StringEscapeUtils.escapeHtml4(key), StringEscapeUtils.escapeHtml4(value));
+        try (CloseableHttpResponse response = HTTP_CLIENT.execute(authorizedGet(urlPath))) {
+
             HttpEntity entity = response.getEntity();
             JsonObject resultObject = new JsonParser().parse(EntityUtils.toString(entity)).getAsJsonObject();
             String resultValue = getResultValue(resultObject);
