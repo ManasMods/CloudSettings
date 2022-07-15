@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 
 public class ApiHelper {
     private static final CloseableHttpClient HTTP_CLIENT = HttpClients.createDefault();
+    private static final String apiEndpointUrl = "https://cloudservice.blutmondgilde.de:2053";
 
     public static String checkAutoLogin() {
         if (!SettingsLoadingHandler.getLoginKeyFile().exists()) {
@@ -43,7 +44,7 @@ public class ApiHelper {
                 return null;
             }
             LogHelper.getLogger().info("Trying login with the Token...");
-            HttpGet request = new HttpGet("http://134.255.220.120:8800/cloudsettings/autologin");
+            HttpGet request = new HttpGet(apiEndpointUrl + "/cloudsettings/autologin");
             request.addHeader(HttpHeaders.USER_AGENT, "Googlebot");
             request.addHeader("user-token", storedToken);
 
@@ -67,7 +68,7 @@ public class ApiHelper {
     }
 
     public static String getUserApiToken(String uuid, String password) {
-        HttpGet request = new HttpGet("http://134.255.220.120:8800/cloudsettings/login/" + uuid);
+        HttpGet request = new HttpGet(apiEndpointUrl + "/cloudsettings/login/" + uuid);
         request.addHeader(HttpHeaders.USER_AGENT, "Googlebot");
         request.addHeader("user-password", password);
         try (CloseableHttpResponse response = HTTP_CLIENT.execute(request)) {
@@ -96,7 +97,7 @@ public class ApiHelper {
     }
 
     private static HttpGet authorizedGet(String path) {
-        HttpGet request = new HttpGet("http://134.255.220.120:8800/cloudsettings/" + path);
+        HttpGet request = new HttpGet(apiEndpointUrl + "/cloudsettings/" + path);
         request.addHeader(HttpHeaders.USER_AGENT, "Googlebot");
         request.addHeader("user-token", SettingsLoadingHandler.apiToken.get());
         return request;
