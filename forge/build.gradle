@@ -15,7 +15,7 @@ configurations {
 }
 
 dependencies {
-    forge "net.minecraftforge:forge:${rootProject.forge_version}"
+    forge "net.minecraftforge:forge:${rootProject.minecraft_version}-${rootProject.forge_version}"
     // Remove the next line if you don't want to depend on the API
     modApi "dev.architectury:architectury-forge:${rootProject.architectury_version}"
 
@@ -25,10 +25,20 @@ dependencies {
 
 processResources {
     inputs.property "version", project.version
-
+    def forgeLoaderVersion = rootProject.forge_version.substring(0, rootProject.forge_version.indexOf('.'))
+    def nextMajorMinecraftVersion = getNextMajorMinecraftVersion(rootProject.minecraft_version)
     filesMatching("META-INF/mods.toml") {
-        expand "version": project.version
+        expand "version": project.version,"forgeLoaderVersion": "[${forgeLoaderVersion},)","minecraftVersion": "${rootProject.minecraft_version}","nextMinecraftVersion":"${nextMajorMinecraftVersion}"
     }
+}
+
+static String getNextMajorMinecraftVersion(String currentVersion) {
+    def version = currentVersion.substring(0, currentVersion.indexOf('.'))
+    def majorVersion = currentVersion.substring(currentVersion.indexOf('.') + 1, currentVersion.indexOf('.', currentVersion.indexOf('.') + 1))
+    def majorInt = Integer.valueOf(majorVersion)
+    majorInt++
+    majorVersion = majorInt.toString()
+    return "${version}.${majorVersion}"
 }
 
 shadowJar {
