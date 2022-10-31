@@ -73,3 +73,24 @@ publishing {
         // Add repositories to publish to here.
     }
 }
+
+curseforge {
+    apiKey = curseforge_apikey
+    project {
+        id = '622165'
+        changelog = changelog
+        releaseType = 'release'
+        addGameVersion minecraft_version
+        relations {
+            requiredDependency 'architectury-api'
+        }
+        mainArtifact(remapJar){
+            displayName = "${minecraft_version}-${mod_version}-Fabric"
+        }
+
+        addArtifact jar
+    }
+    options {
+        forgeGradleIntegration = false // defaults to true
+    }
+}
