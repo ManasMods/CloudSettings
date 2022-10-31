@@ -76,21 +76,16 @@ publishing {
 
 loom.forge.mixinConfig "cloudsettings-common.mixins.json"
 
-curseforge {
-    apiKey = curseforge_apikey
-    project {
-        id = '622165'
-        changelogType = 'html'
-        changelog = rootProject.changelog
-        releaseType = 'release'
-        addGameVersion minecraft_version
-        relations {
-            requiredDependency 'architectury-api'
-        }
-        mainArtifact(remapJar){
-            displayName = "${minecraft_version}-${mod_version}-Forge"
-        }
-
-        addArtifact jar
-    }
+task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
+    apiToken = curseforge_apikey
+    def mainFile = upload(622165, remapJar)
+    mainFile.releaseType = 'release'
+    mainFile.displayName = "${minecraft_version}-${mod_version}-Forge"
+    mainFile.changelog = rootProject.changelog
+    mainFile.changelogType = 'html'
+    mainFile.addRequirement('architectury-api')
+    mainFile.withAdditionalFile(jar)
+    mainFile.withAdditionalFile(shadowJar)
+    mainFile.addModLoader('Forge')
+    mainFile.addGameVersion(minecraft_version)
 }
