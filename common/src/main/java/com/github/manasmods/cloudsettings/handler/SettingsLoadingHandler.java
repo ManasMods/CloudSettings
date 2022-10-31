@@ -35,7 +35,7 @@ public class SettingsLoadingHandler {
     public static void checkForLoad(Options options) {
         if (initialLoadCompleted) return;
         final File optionsFile = ((OptionsAccessor) options).getOptionsFile();
-
+        if (AuthenticationWindow.disableFile.toFile().exists()) return;
 
         LogHelper.getLogger().info("Requesting for authentication...");
 
@@ -76,6 +76,7 @@ public class SettingsLoadingHandler {
 
     public static void checkForUpdate(Options options) {
         if (!initialLoadCompleted) return;
+        if (AuthenticationWindow.disableFile.toFile().exists()) return;
         //check for update
         final File optionsFile = ((OptionsAccessor) options).getOptionsFile();
         LogHelper.getLogger().info("Checking options.txt for updates...");
@@ -86,7 +87,6 @@ public class SettingsLoadingHandler {
             lines.forEach(settingsLine -> {
                 String key = getKeyFromOptionLine(settingsLine);
 
-                //TODO skip blacklisted settings
                 if (settingsMap.containsKey(key)) {
                     // check for change
                     String value = settingsMap.get(key);
