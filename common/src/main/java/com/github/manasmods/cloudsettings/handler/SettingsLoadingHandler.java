@@ -34,6 +34,7 @@ public class SettingsLoadingHandler {
 
     public static void checkForLoad(Options options) {
         if (initialLoadCompleted) return;
+        if (AuthenticationWindow.disableFile.toFile().exists()) return;
         final File optionsFile = ((OptionsAccessor) options).getOptionsFile();
 
 
@@ -76,6 +77,7 @@ public class SettingsLoadingHandler {
 
     public static void checkForUpdate(Options options) {
         if (!initialLoadCompleted) return;
+        if (AuthenticationWindow.disableFile.toFile().exists()) return;
         //check for update
         final File optionsFile = ((OptionsAccessor) options).getOptionsFile();
         LogHelper.getLogger().info("Checking options.txt for updates...");
