@@ -1,5 +1,6 @@
 plugins {
     id "com.github.johnrengelman.shadow" version "7.1.2"
+    id "com.modrinth.minotaur" version "2.+"
 }
 architectury {
     platformSetupLoomIde()
@@ -41,7 +42,7 @@ shadowJar {
 remapJar {
     input.set shadowJar.archiveFile
     dependsOn shadowJar
-    classifier null
+    classifier "forge"
 }
 
 jar {
@@ -92,4 +93,16 @@ task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge)
     shadowFile.displayName = "Shadow"
     mainFile.addModLoader('Forge')
     mainFile.addGameVersion(minecraft_version)
+}
+
+modrinth {
+    token = modrinth_apikey
+    projectId = "nnu4dJj4"
+    versionType = "release"
+    gameVersions = [project.minecraft_version]
+    changelog = project.changelog
+    versionName = "${rootProject.minecraft_version}-${rootProject.mod_version}-Forge"
+    versionNumber = versionName
+    uploadFile = tasks.remapJar
+    loaders = ["forge"]
 }
