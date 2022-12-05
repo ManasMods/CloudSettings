@@ -3,6 +3,7 @@ package com.github.manasmods.cloudsettings.util;
 import com.github.manasmods.cloudsettings.handler.SettingsLoadingHandler;
 import com.github.manasmods.cloudsettings.lwjgl.AuthenticationWindow;
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -12,6 +13,8 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -28,6 +31,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class ApiHelper {
+    private static final Gson GSON = new Gson();
     private static final CloseableHttpClient HTTP_CLIENT = HttpClients.createDefault();
     private static final String apiEndpointUrl = "https://cloudservice.blutmondgilde.de:2053";
 
@@ -103,9 +107,23 @@ public class ApiHelper {
         return request;
     }
 
+    private static HttpPost authorizedPost(String path) {
+        HttpPost request = new HttpPost(apiEndpointUrl + "/cloudsettings/" + path);
+        request.addHeader(HttpHeaders.USER_AGENT, "Googlebot");
+        request.addHeader("user-token", SettingsLoadingHandler.apiToken.get());
+        request.addHeader("Content-type", "application/json");
+        return request;
+    }
+
     public static boolean sendSetting(String key, String value) {
         try {
-            CloseableHttpResponse response = HTTP_CLIENT.execute(authorizedGet(String.format("store/%s/%s/%s", getUserId(), encode(key), encode(value))));
+            HttpPost request = authorizedPost("store/" + getUserId());
+
+            String body = GSON.toJson(new Setting(key, value));
+            request.setEntity(new StringEntity(body));
+
+            HTTP_CLIENT.execute(request);
+            CloseableHttpResponse response = HTTP_CLIENT.execute(request);
 
             HttpEntity entity = response.getEntity();
             JsonReader reader = new JsonReader(new StringReader(EntityUtils.toString(entity)));
