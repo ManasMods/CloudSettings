@@ -23,7 +23,6 @@ import org.lwjgl.util.tinyfd.TinyFileDialogs;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -54,7 +53,7 @@ public class ApiHelper {
 
             CloseableHttpResponse response = HTTP_CLIENT.execute(request);
             HttpEntity entity = response.getEntity();
-            JsonObject resultObject = new JsonParser().parse(EntityUtils.toString(entity)).getAsJsonObject();
+            JsonObject resultObject = JsonParser.parseString(EntityUtils.toString(entity)).getAsJsonObject();
             String result = getResultValue(resultObject);
             if (request == null) return null;
 
@@ -194,9 +193,5 @@ public class ApiHelper {
     private static String getResultValue(JsonObject jsonObject) {
         if (!jsonObject.has("result")) return null;
         return jsonObject.get("result").getAsString();
-    }
-
-    private static String encode(String value) {
-        return URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 }
