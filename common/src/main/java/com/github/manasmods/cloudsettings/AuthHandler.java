@@ -1,12 +1,17 @@
 package com.github.manasmods.cloudsettings;
 
+import com.github.manasmods.cloudsettings.cloudservice.CloudSettingsApi;
 import com.github.manasmods.cloudsettings.lwjgl.AuthenticationWindow;
 import com.github.manasmods.cloudsettings.util.Constants;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Synchronized;
 import net.minecraft.client.Minecraft;
+import org.apache.http.HttpHeaders;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 
+import javax.annotation.Nullable;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -24,28 +29,28 @@ public class AuthHandler {
         return getAuthKey() != null;
     }
 
-    public void login() {
+    public void login(String userId) {
         // Check if we are already logged in
         if (isLoggedIn()) return;
         // Exit since mod is disabled
         if (!CloudSettings.isEnabled()) return;
         // Try to log in with stored key
         if (autoLogin()) return;
-        String token = loginLoop();
+        String token = loginLoop(userId);
         if (token == null || token.startsWith(" ")) return;
         Constants.logger.info("Log in successful");
         this.authKey = token;
         writeAutoLoginFile();
     }
 
-    private String loginLoop() {
+    private String loginLoop(String userId) {
         // Request password
         String password = AuthenticationWindow.requestPassword();
         // Exit since mod is disabled
         if (password == null) return null;
         // Try to log in
         String token = CloudSettingsApi.login(Minecraft.getInstance().getUser().getUuid(), password);
-        if (token == null) loginLoop();
+        if (token == null) loginLoop(userId);
         return token;
     }
 
@@ -89,6 +94,25 @@ public class AuthHandler {
                 }
             }
         }
+    }
+
+    @Nullable
+    public HttpGet authorizeGetRequest(String path) {
+        if (!isLoggedIn()) return null;
+        HttpGet request = new HttpGet(Constants.CLOUD_SERVER + "/cloudsettings/" + path);
+        request.addHeader(HttpHeaders.USER_AGENT, "Googlebot");
+        request.addHeader("user-token", this.authKey);
+        return request;
+    }
+
+    @Nullable
+    public HttpPost authorizedPostRequest(String path) {
+        if (!isLoggedIn()) return null;
+        HttpPost request = new HttpPost(Constants.CLOUD_SERVER + "/cloudsettings/" + path);
+        request.addHeader(HttpHeaders.USER_AGENT, "Googlebot");
+        request.addHeader("user-token", this.authKey);
+        request.addHeader("Content-type", "application/json");
+        return request;
     }
 
     public void logout() {
