@@ -33,7 +33,7 @@ public class AuthHandler {
         if (autoLogin()) return;
         String token = loginLoop();
         if (token == null || token.startsWith(" ")) return;
-        Constants.logger.info("Login successful");
+        Constants.logger.info("Log in successful");
         this.authKey = token;
         writeAutoLoginFile();
     }
@@ -56,7 +56,7 @@ public class AuthHandler {
             Constants.logger.info("Loaded Key {} from storage", storedToken);
             String token = CloudSettingsApi.autoLogin(storedToken);
             if (token != null) {
-                Constants.logger.info("Auto Login was successful");
+                Constants.logger.info("Auto Log in was successful");
                 this.authKey = token;
                 writeAutoLoginFile();
                 return true;
@@ -65,6 +65,7 @@ public class AuthHandler {
             e.printStackTrace();
         }
 
+        Constants.logger.info("Auto log in failed.");
         return false;
     }
 
@@ -84,7 +85,7 @@ public class AuthHandler {
         } catch (IOException e) {
             if (CloudSettings.getLoginKeyFile().exists()) {
                 if (CloudSettings.getLoginKeyFile().delete()) {
-                    Constants.logger.info("Deleted old auto login file.", e);
+                    Constants.logger.info("Deleted old auto log in file.", e);
                 }
             }
         }

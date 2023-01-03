@@ -35,6 +35,7 @@ public class CloudSettingsApi {
                 Constants.logger.error("Got no result from auto login request.");
                 return null;
             }
+            return token;
         } catch (Exception e) {
             Constants.logger.error("Failed to read auto login response.", e);
         }

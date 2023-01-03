@@ -50,10 +50,12 @@ public class CloudSettings {
         try (Socket socket = new Socket()) {
             socket.connect(new InetSocketAddress(Constants.CLOUD_SERVER_HOSTNAME, Constants.CLOUD_SERVER_PORT), 5000);
             connectivity = State.TRUE;
+            Constants.logger.info("Successfully connected to cloud");
         } catch (SocketTimeoutException e) {
             connectivity = State.FALSE;
+            Constants.logger.error("Time out on connection test");
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            Constants.logger.error("Exception while testing connection to cloud", e);
         }
     }
 
@@ -63,7 +65,7 @@ public class CloudSettings {
             try {
                 Files.write(getDisableModFile().toPath(), Lists.newArrayList(" "), StandardCharsets.UTF_8);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                Constants.logger.error("Error on writing key file.", e);
             }
         }
     }
