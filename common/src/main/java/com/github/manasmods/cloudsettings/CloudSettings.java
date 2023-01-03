@@ -1,6 +1,7 @@
 package com.github.manasmods.cloudsettings;
 
 import com.github.manasmods.cloudsettings.cloudservice.CloudSettingsApi;
+import com.github.manasmods.cloudsettings.cloudservice.pojo.Setting;
 import com.github.manasmods.cloudsettings.mixin.AccessorOptions;
 import com.github.manasmods.cloudsettings.util.Constants;
 import com.github.manasmods.cloudsettings.util.State;
@@ -95,8 +96,8 @@ public class CloudSettings {
         final File optionsFile = ((AccessorOptions) options).getOptionsFile();
         AUTH_HANDLER.login(getUserId());
 
-        for (String settingsLine : CloudSettingsApi.getUserSettings(getUserId(), AUTH_HANDLER)) {
-            settingsMap.put(Utils.getKeyFromOptionLine(settingsLine), settingsLine);
+        for (Setting setting : CloudSettingsApi.getUserSettings(getUserId(), AUTH_HANDLER)) {
+            settingsMap.put(setting.getKey(), setting.getValue());
         }
 
         if (!optionsFile.exists()) {

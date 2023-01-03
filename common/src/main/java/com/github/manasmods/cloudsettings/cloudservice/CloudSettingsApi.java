@@ -2,14 +2,13 @@ package com.github.manasmods.cloudsettings.cloudservice;
 
 import com.github.manasmods.cloudsettings.AuthHandler;
 import com.github.manasmods.cloudsettings.cloudservice.pojo.Setting;
+import com.github.manasmods.cloudsettings.cloudservice.response.PlayerSettingsResponse;
 import com.github.manasmods.cloudsettings.exception.AuthenticationFailedException;
 import com.github.manasmods.cloudsettings.lwjgl.AuthenticationWindow;
 import com.github.manasmods.cloudsettings.util.Constants;
 import com.github.manasmods.cloudsettings.util.Utils;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -87,30 +86,20 @@ public class CloudSettingsApi {
         return login(userId, password, 5);
     }
 
-    public static List<String> getUserSettings(String userId, AuthHandler authHandler) {
-        ArrayList<String> loadedSettings = new ArrayList<>();
+    public static List<Setting> getUserSettings(String userId, AuthHandler authHandler) {
+        ArrayList<Setting> loadedSettings = new ArrayList<>();
         HttpGet request = authHandler.authorizeGetRequest("store/" + userId);
         // Return none if user is not authenticated
         if (request == null) return loadedSettings;
 
         Constants.logger.debug("Sending {} get request", "store/" + userId);
-        try {
-            CloseableHttpResponse response = HTTP_CLIENT.execute(request);
+        try (CloseableHttpResponse response = HTTP_CLIENT.execute(request)) {
+            PlayerSettingsResponse playerSettingsResponse = GSON.fromJson(EntityUtils.toString(response.getEntity()), PlayerSettingsResponse.class);
 
-            String resultValue = resolveResultValue(response);
-            if (!"Success".equals(resultValue)) return loadedSettings;
-            JsonObject resultObject = new JsonParser().parse(EntityUtils.toString(response.getEntity())).getAsJsonObject();
-            if (!resultObject.has("entries")) return loadedSettings;
-
-            JsonArray storedSettings = resultObject.get("entries").getAsJsonArray();
-            storedSettings.forEach(jsonElement -> {
-                if (!jsonElement.isJsonObject()) return;
-                JsonObject jsonObject = jsonElement.getAsJsonObject();
-                if (!jsonObject.has("key") || !jsonObject.has("value")) return;
-                loadedSettings.add(jsonObject.get("value").getAsString());
-            });
-            Constants.logger.info("Loaded {} Settings from Cloud Service", loadedSettings.size());
-            response.close();
+            if ("Success".equals(playerSettingsResponse.getResult().getResult())) {
+                loadedSettings.addAll(playerSettingsResponse.getEntries());
+                Constants.logger.info("Loaded {} Settings from Cloud Service", loadedSettings.size());
+            }
         } catch (IOException e) {
             Constants.logger.error("Error on loading user settings from cloud service", e);
         }
