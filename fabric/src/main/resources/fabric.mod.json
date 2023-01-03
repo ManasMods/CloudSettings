@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "cloudsettings",
+  "version": "${version}",
+  "name": "Cloud Settings",
+  "description": "A simple mod that synchronize your options.txt to other modpack instances",
+  "authors": [
+    "MrProfessor"
+  ],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/cloudsettings",
+    "sources": "https://github.com/ManasMods/CloudSettings",
+    "issues": "https://github.com/ManasMods/CloudSettings/issues"
+  },
+  "license": "ARR",
+  "icon": "assets/cloudsettings/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.github.manasmods.cloudsettings.CloudSettingsFabric"
+    ]
+  },
+  "mixins": [
+    "cloudsettings.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14",
+    "fabric": "*",
+    "minecraft": ">=1.16.5",
+    "java": ">=8"
+  }
+}
