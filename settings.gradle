@@ -18,5 +18,9 @@ include("fabric_1_19_3")
 include("forge_1_16_5")
 include("forge_1_17_1")
 include("forge_1_18_2")
+include("forge_1_19")
+include("forge_1_19_1")
+include("forge_1_19_2")
+include("forge_1_19_3")
 
 rootProject.name = "cloudsettings"
