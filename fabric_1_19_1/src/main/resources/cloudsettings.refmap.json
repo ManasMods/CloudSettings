@@ -1,0 +1,22 @@
+{
+  "mappings": {
+    "com/github/manasmods/cloudsettings/mixin/MixinOptions": {
+      "load()V": "Lnet/minecraft/class_315;method_1636()V",
+      "save()V": "Lnet/minecraft/class_315;method_1640()V"
+    },
+    "com/github/manasmods/cloudsettings/mixin/AccessorOptions": {
+      "optionsFile": "field_1897:Ljava/io/File;"
+    }
+  },
+  "data": {
+    "named:intermediary": {
+      "com/github/manasmods/cloudsettings/mixin/MixinOptions": {
+        "load()V": "Lnet/minecraft/class_315;method_1636()V",
+        "save()V": "Lnet/minecraft/class_315;method_1640()V"
+      },
+      "com/github/manasmods/cloudsettings/mixin/AccessorOptions": {
+        "optionsFile": "field_1897:Ljava/io/File;"
+      }
+    }
+  }
+}
