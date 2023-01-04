@@ -4,11 +4,7 @@ plugins {
 
 architectury {
     platformSetupLoomIde()
-    fabric()
-}
-
-loom {
-    accessWidenerPath = project(":common").loom.accessWidenerPath
+    forge()
 }
 
 configurations {
@@ -16,37 +12,41 @@ configurations {
     shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
-    developmentFabric.extendsFrom common
+    developmentForge.extendsFrom common
 }
 
 dependencies {
-    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
-    modApi "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
+    forge "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
-    shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
+    shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
+}
+
+loom {
+    forge {
+        mixinConfig "cloudsettings.mixins.json"
+    }
 }
 
 processResources {
     inputs.property "version", project.version
 
-    filesMatching("fabric.mod.json") {
+    filesMatching("META-INF/mods.toml") {
         expand "version": project.version
     }
 }
 
 shadowJar {
-    exclude "architectury.common.json"
+    exclude "fabric.mod.json"
 
     configurations = [project.configurations.shadowCommon]
     classifier "dev-shadow"
 }
 
 remapJar {
-    injectAccessWidener = true
     input.set shadowJar.archiveFile
     dependsOn shadowJar
-    classifier "fabric"
+    classifier "forge"
 }
 
 jar {
@@ -59,6 +59,19 @@ sourcesJar {
     from commonSources.archiveFile.map { zipTree(it) }
 }
 
+task copyResultToRootProject {
+    doLast {
+        def sourcePath = "${project.getProjectDir().toString()}/build/libs/${archivesBaseName}-${version}-forge.jar"
+        def destinationPath = "${rootProject.getProjectDir().toString()}/build/libs/"
+        println("Copying result file from ${sourcePath} to ${destinationPath}")
+        copy {
+            from sourcePath
+            into destinationPath
+        }
+    }
+}
+build.finalizedBy(copyResultToRootProject)
+
 components.java {
     withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
         skip()
@@ -67,7 +80,7 @@ components.java {
 
 publishing {
     publications {
-        mavenFabric(MavenPublication) {
+        mavenForge(MavenPublication) {
             artifactId = rootProject.archives_base_name + "-" + project.name
             from components.java
         }

@@ -8,7 +8,7 @@ pluginManagement {
 }
 
 include("common")
-include("fabric")
-include("forge")
+include("fabric_1_16_5")
+include("forge_1_16_5")
 
 rootProject.name = "cloudsettings"
