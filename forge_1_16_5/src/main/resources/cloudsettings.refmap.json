@@ -1,0 +1,22 @@
+{
+  "mappings": {
+    "com/github/manasmods/cloudsettings/mixin/MixinOptions": {
+      "load()V": "Lnet/minecraft/client/GameSettings;func_74300_a()V",
+      "save()V": "Lnet/minecraft/client/GameSettings;func_74303_b()V"
+    },
+    "com/github/manasmods/cloudsettings/mixin/AccessorOptions": {
+      "optionsFile": "field_74354_ai:Ljava/io/File;"
+    }
+  },
+  "data": {
+    "searge": {
+      "com/github/manasmods/cloudsettings/mixin/MixinOptions": {
+        "load()V": "Lnet/minecraft/client/GameSettings;func_74300_a()V",
+        "save()V": "Lnet/minecraft/client/GameSettings;func_74303_b()V"
+      },
+      "com/github/manasmods/cloudsettings/mixin/AccessorOptions": {
+        "optionsFile": "field_74354_ai:Ljava/io/File;"
+      }
+    }
+  }
+}

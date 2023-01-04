@@ -3,7 +3,7 @@
   "minVersion": "0.8",
   "package": "com.github.manasmods.cloudsettings.mixin",
   "compatibilityLevel": "JAVA_8",
-  "refmap": "cloudsettings-common-refmap.json",
+  "refmap": "cloudsettings.refmap.json",
   "client": [
     "AccessorOptions",
     "MixinOptions"

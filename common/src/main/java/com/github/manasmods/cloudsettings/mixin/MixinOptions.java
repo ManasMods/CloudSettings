@@ -13,7 +13,7 @@ public class MixinOptions {
     @Inject(method = "save()V", at = @At("RETURN"))
     private void onSave(CallbackInfo ci) {
         if (!CloudSettings.isInitialized()) return;
-        if (CloudSettings.isEnabled()) return;
+        if (!CloudSettings.isEnabled()) return;
         Constants.logger.info("Checking for updates");
         long start = System.currentTimeMillis();
         CloudSettings.updateSettings((Options) (Object) this);
