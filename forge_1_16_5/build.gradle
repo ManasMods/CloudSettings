@@ -2,9 +2,12 @@ plugins {
     id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
+archivesBaseName = "${rootProject.archives_base_name}-${minecraft_version}"
+
 architectury {
     platformSetupLoomIde()
     forge()
+    minecraft = minecraft_version
 }
 
 configurations {
@@ -16,6 +19,7 @@ configurations {
 }
 
 dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
     forge "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
@@ -29,10 +33,18 @@ loom {
 }
 
 processResources {
+    def majorForgeVersion = project.forge_version.substring(0, project.forge_version.indexOf('.'))
+
     inputs.property "version", project.version
+    inputs.property "majorForgeVersion", majorForgeVersion
+    inputs.property "minecraftVersion", project.minecraft_version
+    inputs.property "nextMinecraftVersion", rootProject.getNextMajorMinecraftVersion(project.minecraft_version)
 
     filesMatching("META-INF/mods.toml") {
-        expand "version": project.version
+        expand "version": project.version,
+                "majorForgeVersion": majorForgeVersion,
+                "minecraftVersion": project.minecraft_version,
+                "nextMinecraftVersion": rootProject.getNextMajorMinecraftVersion(project.minecraft_version)
     }
 }
 

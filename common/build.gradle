@@ -7,6 +7,7 @@ loom {
 }
 
 dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
 }
 
@@ -22,4 +23,8 @@ publishing {
     repositories {
         // Add repositories to publish to here.
     }
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(8)
 }

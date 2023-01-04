@@ -1,31 +1,32 @@
 plugins {
     id "io.freefair.lombok" version "6.6.1"
-    id "architectury-plugin" version "3.4-SNAPSHOT"
+    id "architectury-plugin" version "3.4-SNAPSHOT" apply false
     id "dev.architectury.loom" version "0.12.0-SNAPSHOT" apply false
 }
 
-architectury {
-    minecraft = rootProject.minecraft_version
+static String getNextMajorMinecraftVersion(String currentVersion) {
+    def version = currentVersion.substring(0, currentVersion.indexOf('.'))
+    def majorSubstring = currentVersion.indexOf('.', currentVersion.indexOf('.') + 1)
+    def majorVersion
+
+    if (majorSubstring == -1) {
+        majorVersion = currentVersion.substring(currentVersion.indexOf('.') + 1)
+    } else {
+        majorVersion = currentVersion.substring(currentVersion.indexOf('.') + 1, currentVersion.indexOf('.', currentVersion.indexOf('.') + 1))
+    }
+
+    def majorInt = Integer.valueOf(majorVersion)
+    majorInt++
+    majorVersion = majorInt.toString()
+    return "${version}.${majorVersion}"
 }
 
 subprojects {
-    apply plugin: "dev.architectury.loom"
-    apply plugin: "io.freefair.lombok"
-
-    loom {
-        silentMojangMappingsLicense()
-    }
-
-    dependencies {
-        minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
-        mappings loom.officialMojangMappings()
-    }
-}
-
-allprojects {
     apply plugin: "java"
     apply plugin: "architectury-plugin"
     apply plugin: "maven-publish"
+    apply plugin: "dev.architectury.loom"
+    apply plugin: "io.freefair.lombok"
 
     archivesBaseName = rootProject.archives_base_name
     version = rootProject.mod_version
@@ -38,5 +39,13 @@ allprojects {
     java {
         withSourcesJar()
         toolchain.languageVersion = JavaLanguageVersion.of(8)
+    }
+
+    loom {
+        silentMojangMappingsLicense()
+    }
+
+    dependencies {
+        mappings loom.officialMojangMappings()
     }
 }
