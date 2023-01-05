@@ -21,7 +21,7 @@ public class MixinOptions {
     }
 
     @Inject(method = "load()V", at = @At("HEAD"))
-    private void onSaved(CallbackInfo ci) {
+    private void onLoad(CallbackInfo ci) {
         if (CloudSettings.isInitialized()) return;
         if (!CloudSettings.isEnabled()) return;
         Constants.logger.info("Initializing Cloud Settings");

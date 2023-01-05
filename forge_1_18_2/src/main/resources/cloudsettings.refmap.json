@@ -6,6 +6,9 @@
     },
     "com/github/manasmods/cloudsettings/mixin/AccessorOptions": {
       "optionsFile": "f_92110_:Ljava/io/File;"
+    },
+    "com/github/manasmods/cloudsettings/mixin/MixinWindow": {
+      "setPreferredFullscreenVideoMode(Ljava/util/Optional;)V": "Lcom/mojang/blaze3d/platform/Window;m_85405_(Ljava/util/Optional;)V"
     }
   },
   "data": {
@@ -16,6 +19,9 @@
       },
       "com/github/manasmods/cloudsettings/mixin/AccessorOptions": {
         "optionsFile": "f_92110_:Ljava/io/File;"
+      },
+      "com/github/manasmods/cloudsettings/mixin/MixinWindow": {
+        "setPreferredFullscreenVideoMode(Ljava/util/Optional;)V": "Lcom/mojang/blaze3d/platform/Window;m_85405_(Ljava/util/Optional;)V"
       }
     }
   }

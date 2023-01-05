@@ -6,6 +6,9 @@
     },
     "com/github/manasmods/cloudsettings/mixin/AccessorOptions": {
       "optionsFile": "field_1897:Ljava/io/File;"
+    },
+    "com/github/manasmods/cloudsettings/mixin/MixinWindow": {
+      "setPreferredFullscreenVideoMode(Ljava/util/Optional;)V": "Lnet/minecraft/class_1041;method_4505(Ljava/util/Optional;)V"
     }
   },
   "data": {
@@ -16,6 +19,9 @@
       },
       "com/github/manasmods/cloudsettings/mixin/AccessorOptions": {
         "optionsFile": "field_1897:Ljava/io/File;"
+      },
+      "com/github/manasmods/cloudsettings/mixin/MixinWindow": {
+        "setPreferredFullscreenVideoMode(Ljava/util/Optional;)V": "Lnet/minecraft/class_1041;method_4505(Ljava/util/Optional;)V"
       }
     }
   }

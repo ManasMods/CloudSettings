@@ -9,7 +9,7 @@ import java.io.StringReader;
 
 @UtilityClass
 public class Utils {
-    public static String getKeyFromOptionLine(String line) {
+    public String getKeyFromOptionLine(String line) {
         return line.substring(0, line.indexOf(':'));
     }
 

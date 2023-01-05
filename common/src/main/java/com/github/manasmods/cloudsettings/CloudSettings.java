@@ -28,6 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 public class CloudSettings {
+    private static final String EXCLUDED_VALUE = "@NULL@";
     public static final AuthHandler AUTH_HANDLER = new AuthHandler();
     private static State connectivity = State.PENDING;
     @Getter(onMethod_ = {@Synchronized})
@@ -97,6 +98,7 @@ public class CloudSettings {
         AUTH_HANDLER.login(getUserId());
 
         for (Setting setting : CloudSettingsApi.getUserSettings(getUserId(), AUTH_HANDLER)) {
+            if (setting.getValue().equals(EXCLUDED_VALUE)) continue;
             settingsMap.put(setting.getKey(), setting.getValue());
         }
 
@@ -162,6 +164,11 @@ public class CloudSettings {
                 Constants.logger.info("Failed to update {} with value {} in Cloud.", key, value);
             }
         });
+    }
+
+    public static void disableResolution() {
+        Constants.logger.info("Removing fullscreenResolution from CloudStorage");
+        updateOption("fullscreenResolution", EXCLUDED_VALUE);
     }
 
     @Synchronized
