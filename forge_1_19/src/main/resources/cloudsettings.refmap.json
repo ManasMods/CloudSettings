@@ -4,11 +4,11 @@
       "load()V": "Lnet/minecraft/client/Options;m_92140_()V",
       "save()V": "Lnet/minecraft/client/Options;m_92169_()V"
     },
-    "com/github/manasmods/cloudsettings/mixin/AccessorOptions": {
-      "optionsFile": "f_92110_:Ljava/io/File;"
-    },
     "com/github/manasmods/cloudsettings/mixin/MixinWindow": {
       "setPreferredFullscreenVideoMode(Ljava/util/Optional;)V": "Lcom/mojang/blaze3d/platform/Window;m_85405_(Ljava/util/Optional;)V"
+    },
+    "com/github/manasmods/cloudsettings/mixin/AccessorOptions": {
+      "optionsFile": "f_92110_:Ljava/io/File;"
     }
   },
   "data": {
@@ -17,11 +17,11 @@
         "load()V": "Lnet/minecraft/client/Options;m_92140_()V",
         "save()V": "Lnet/minecraft/client/Options;m_92169_()V"
       },
-      "com/github/manasmods/cloudsettings/mixin/AccessorOptions": {
-        "optionsFile": "f_92110_:Ljava/io/File;"
-      },
       "com/github/manasmods/cloudsettings/mixin/MixinWindow": {
         "setPreferredFullscreenVideoMode(Ljava/util/Optional;)V": "Lcom/mojang/blaze3d/platform/Window;m_85405_(Ljava/util/Optional;)V"
+      },
+      "com/github/manasmods/cloudsettings/mixin/AccessorOptions": {
+        "optionsFile": "f_92110_:Ljava/io/File;"
       }
     }
   }
