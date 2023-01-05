@@ -97,10 +97,10 @@ publishing {
 
 unifiedPublishing {
     project {
-        displayName = "${minecraft_version}-${version}-Fabric"
+        displayName = "${minecraft_version}-${project.version}-Fabric"
         gameLoaders = ['fabric', 'quilt']
         gameVersions= [minecraft_version]
-        version = version
+        version = project.version
         changelog = file("${rootProject.rootDir.path}/Changelog.md").text
         releaseType = "release"
         mainPublication tasks.remapJar

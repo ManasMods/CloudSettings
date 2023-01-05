@@ -110,10 +110,10 @@ java {
 
 unifiedPublishing {
     project {
-        displayName = "${minecraft_version}-${version}-Forge"
+        displayName = "${minecraft_version}-${project.version}-Forge"
         gameLoaders = ['forge']
         gameVersions= [minecraft_version]
-        version = version
+        version = project.version
         changelog = file("${rootProject.rootDir.path}/Changelog.md").text
         releaseType = "release"
         mainPublication tasks.remapJar
